@@ -1,5 +1,7 @@
 # mine (test files start with test)
 test*
+*.wav
+*.mp3
 
 # Prerequisites
 *.d

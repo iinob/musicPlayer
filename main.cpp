@@ -8,12 +8,14 @@
 
 // this program is very windows-heavy so it won't work on linux without the sufficient libaries (ncurses) and some tweaking
 
+// g++ main.cpp -lwinmm
+
 /*
     PROGRESS:
-    reading files/directories, changing directories
+    reading files/directories, changing directories, playing .wav
 
     TODO:
-    playing files (shouldn't be too bad on windows), diff music vs non-music as to not play a png, better controls/ux 
+    other audio formats, diff music vs non-music as to not play a png, better controls/ux 
 */
 
 // easier to read
@@ -29,7 +31,7 @@ std::vector<std::string> folders;
 
 // declare root (cd is temporary)
 std::string root = fs::current_path().string();
-std::string cd = "D:\\bulkStorage\\programs\\musicPlayer\\testdir";
+std::string cd = root;
 std::string shortdir = "";
 
 // more convenient way to change the color out of a cout
@@ -103,6 +105,9 @@ int main() {
                 std::cout << "\n\nwhat is your desired root directory? ";
                 std::cin >> cd; // very dangerous
                 ls(cd, yellow);
+                break;
+            case 13:
+                PlaySound(TEXT(files[selectCounter].c_str()), NULL, SND_FILENAME | SND_ASYNC); // this will say it's broken in vscode, but it works, only works with wav
         }
         // doesn't work with files more than 66 char long, if your file names are that long you should get help
         // using this in my own audio folder gets caught on the file 'lolgam32momentdeeznutshahafunnymusiconthethingwiththesongthathasthefamuilyguypedergriffinghahasofunnyright.mp3'. this is an edge case and I do not care enough to fix it.
