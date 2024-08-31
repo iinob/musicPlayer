@@ -1,3 +1,6 @@
+# mine (test files start with test)
+test*
+
 # Prerequisites
 *.d
 
