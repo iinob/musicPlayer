@@ -8,6 +8,14 @@
 
 // this program is very windows-heavy so it won't work on linux without the sufficient libaries (ncurses) and some tweaking
 
+/*
+    PROGRESS:
+    reading files/directories, changing directories
+
+    TODO:
+    playing files (shouldn't be too bad on windows), diff music vs non-music as to not play a png, better controls/ux 
+*/
+
 // easier to read
 namespace fs = std::filesystem;
 
