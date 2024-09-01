@@ -17,7 +17,7 @@
     reading files/directories, changing directories, playing .wav, filtering files
 
     TODO:
-    other audio formats, better controls/ux, don't crash when reading a folder with no wavs, save root location
+    other audio formats, better controls/ux, don't crash when reading a folder with no wavs, save root location (this would be super ez but I don't wanna)
 */
 
 // easier to read
@@ -35,7 +35,7 @@ std::vector<std::string> folders;
 
 // declare root
 std::string root = fs::current_path().string();
-std::string cd = root;
+std::string cd = root; // the cd system is fundamentally broken and should be removed. however, I still want the subfolder feature because that is cool
 std::string shortdir = "";
 
 boolean displayWavs = true; // whether the program should use the wavs vector or the files vector
@@ -54,24 +54,36 @@ void ls(std::string directory, std::string textColor, boolean output) {
     wavs.clear();
     folders.clear();
 
+    boolean hasFiles = false;
+    boolean hasWavs = false;
+
+
     color(textColor);
     // voodoo
     for (const auto & entry : fs::directory_iterator(directory)) {
-        std::string currentFile = entry.path().filename().string();
-        if (output) {
-            std::cout << currentFile << "\n"; // lots of functions lol
+        std::string currentFile = entry.path().filename().string(); // lots of functions
+        if (output) { // sometimes I want the function to shut up
+            std::cout << currentFile << "\n";
         }
         if (fs::is_directory(entry.status())) {
             folders.push_back(currentFile);
         } else if(currentFile.substr(currentFile.length() - 4) == ".wav"){
             files.push_back(currentFile);
             wavs.push_back(currentFile);
+            hasFiles = true;
+            hasWavs = true;
         } else {
             files.push_back(currentFile);
+            hasFiles = true;
         }
-    
     }
     color(normal);
+        std::cout << "\n" << hasFiles << "\n";
+        if(!hasFiles) {
+            (*cvec).push_back("NO FILES FOUND!");
+        } else if(hasFiles && !hasWavs) {
+            (*cvec).push_back("NO AUDIO FILES FOUND! PRESS R TO CHANGE SORT MODE!");
+        }
 }
 
 int main() {
@@ -93,22 +105,16 @@ int main() {
 
     
     // test stuffs
-
-    /*
-    std::ofstream outfile ("test.txt");
-    outfile.close();
-    std::remove("D:\\bulkStorage\\programs\\musicPlayer\\test.txt");
-    */
     std::cout << "current directory = "  << cd << "\n";
-    std::cout << shortdir << "\n";
+    //std::cout << shortdir << "\n";
     ls(cd, yellow, true);
     
 
     int selectCounter = 0;
     std::string tempdir;
     while(input != 27) {
-        if((*cvec).size() <= 0) {
-            std::cout << "\nthat directory has no wav files, quitting...\n";
+        if((*cvec).size() <= 0) { // this should never occur
+            std::cout << "\nreaching this should be impossible. please tell me if that happens\n";
             system("pause");
             return 1;
         }
@@ -127,11 +133,11 @@ int main() {
                 std::cout << "\n\nwhat is your desired root directory? ";
                 color(red);
                 std::cin >> tempdir;
-                 if (std::filesystem::exists(tempdir) && std::filesystem::is_directory(tempdir)) {
+                 if (std::filesystem::exists(tempdir) && std::filesystem::is_directory(tempdir)) { // not cin >> cd, who would possibly do that
                     cd = tempdir;
                     std::cout << "root change successful\n";
                 } else {
-                    std::cout << "root change failed\n";
+                    std::cout << "\aroot change failed\n";
                 }
                 color(normal);
                 ls(cd, yellow, true);
