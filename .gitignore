@@ -3,6 +3,11 @@ test*
 *.wav
 *.mp3
 
+# vscode stuffs
+*.vscode
+settings.json
+tasks.json
+
 # Prerequisites
 *.d
 
