@@ -15,9 +15,10 @@
 /*
     PROGRESS:
     reading files/directories, changing directories, playing .wav, filtering files
+    (this section doesn't really do anything but it's motivating)
 
     TODO:
-    other audio formats, better controls/ux, don't crash when reading a folder with no wavs, save root location (this would be super ez but I don't wanna)
+    other audio formats, better controls/ux, save root location (this would be super ez but I don't wanna)
 */
 
 // easier to read
@@ -78,7 +79,7 @@ void ls(std::string directory, std::string textColor, boolean output) {
         }
     }
     color(normal);
-        std::cout << "\n" << hasFiles << "\n";
+        //std::cout << "\n" << hasFiles << "\n"; // this outputs a smiley face. no idea why. I want answers Bjarne.
         if(!hasFiles) {
             (*cvec).push_back("NO FILES FOUND!");
         } else if(hasFiles && !hasWavs) {
