@@ -8,6 +8,8 @@
 
 // this program is very windows-heavy so it won't work on linux without the sufficient libaries (ncurses) and some tweaking
 
+// MAKE SURE YOU HAVE WAV FILES IN THE FOLDER YOU START THE PROGRAM IN
+
 // g++ main.cpp -lwinmm
 
 /*
@@ -15,7 +17,7 @@
     reading files/directories, changing directories, playing .wav, filtering files
 
     TODO:
-    other audio formats, diff music vs non-music as to not play a png, better controls/ux 
+    other audio formats, better controls/ux, don't crash when reading a folder with no wavs, save root location
 */
 
 // easier to read
@@ -24,20 +26,21 @@ namespace fs = std::filesystem;
 // strings to hold colors for ease of use
 std::string red = "\033[1;31m";
 std::string yellow = "\033[1;33m";
+std::string green = "\033[1;32m";
 std::string normal = "\033[0m";
 
 std::vector<std::string> files;
 std::vector<std::string> wavs;
 std::vector<std::string> folders;
 
-// declare root (cd is temporary)
+// declare root
 std::string root = fs::current_path().string();
 std::string cd = root;
 std::string shortdir = "";
 
-boolean displayWavs = true;
+boolean displayWavs = true; // whether the program should use the wavs vector or the files vector
 
-std::vector<std::string>* cvec = &wavs;
+std::vector<std::string>* cvec = &wavs; // pointer to hold whatever the current used vector is
 
 // more convenient way to change the color out of a cout
 void color(std::string target) {
@@ -48,6 +51,7 @@ void color(std::string target) {
 void ls(std::string directory, std::string textColor, boolean output) {
     // flush vectors, otherwise you have to work through all files in the previous directory before you can get into this one
     files.clear();
+    wavs.clear();
     folders.clear();
 
     color(textColor);
@@ -101,7 +105,13 @@ int main() {
     
 
     int selectCounter = 0;
+    std::string tempdir;
     while(input != 27) {
+        if((*cvec).size() <= 0) {
+            std::cout << "\nthat directory has no wav files, quitting...\n";
+            system("pause");
+            return 1;
+        }
         std::cout << "\r" << "current file: " << shortdir << "\\" << ((displayWavs) ? wavs[selectCounter] : files[selectCounter]) << std::flush;
         input = getch();
         // cases are ascii character codes from the getch
@@ -116,7 +126,13 @@ int main() {
             case 102:
                 std::cout << "\n\nwhat is your desired root directory? ";
                 color(red);
-                std::cin >> cd; // very dangerous
+                std::cin >> tempdir;
+                 if (std::filesystem::exists(tempdir) && std::filesystem::is_directory(tempdir)) {
+                    cd = tempdir;
+                    std::cout << "root change successful\n";
+                } else {
+                    std::cout << "root change failed\n";
+                }
                 color(normal);
                 ls(cd, yellow, true);
                 break;
@@ -131,6 +147,11 @@ int main() {
                     cvec = &files;
                 }
                 ls(cd, yellow, false);
+                break;
+            case 100:
+                std::cout << "\n";
+                ls(cd, green, true);
+                break;
         }
         // doesn't work with files more than 66 char long, if your file names are that long you should get help
         // using this in my own audio folder gets caught on the file 'lolgam32momentdeeznutshahafunnymusiconthethingwiththesongthathasthefamuilyguypedergriffinghahasofunnyright.mp3'. this is an edge case and I do not care enough to fix it.

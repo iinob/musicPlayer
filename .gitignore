@@ -4,7 +4,7 @@ test*
 *.mp3
 
 # vscode stuffs
-*.vscode
+.vscode
 settings.json
 tasks.json
 
