@@ -36,7 +36,8 @@ std::vector<std::string> folders;
 
 // declare root
 std::string root = fs::current_path().string();
-std::string cd = root; // the cd system is fundamentally broken and should be removed. however, I still want the subfolder feature because that is cool
+std::string cd = root; // the cd system is fundamentally broken and should be removed. however, I still want the subfolder feature because that is cool. to fix later
+// there is also so much built off the cd system that I can't just remove it. I dug myself into this hole and now I'm stuck in it
 std::string shortdir = "";
 
 boolean displayWavs = true; // whether the program should use the wavs vector or the files vector
@@ -62,9 +63,9 @@ void ls(std::string directory, std::string textColor, boolean output) {
     color(textColor);
     // voodoo
     for (const auto & entry : fs::directory_iterator(directory)) {
-        std::string currentFile = entry.path().filename().string(); // lots of functions
+        std::string currentFile = entry.path().string(); // lots of functions
         if (output) { // sometimes I want the function to shut up
-            std::cout << currentFile << "\n";
+            std::cout << entry.path().filename().string() << "\n";
         }
         if (fs::is_directory(entry.status())) {
             folders.push_back(currentFile);
@@ -95,6 +96,7 @@ int main() {
     } else {
         shortdir = "";
     }
+  
     int input = 0;
 
     // sets the console virtual so it'll support ANSI escape codes   I love windows :|
@@ -119,7 +121,9 @@ int main() {
             system("pause");
             return 1;
         }
-        std::cout << "\r" << "current file: " << shortdir << "\\" << ((displayWavs) ? wavs[selectCounter] : files[selectCounter]) << std::flush;
+        std::string operatingFile = ((displayWavs) ? wavs[selectCounter] : files[selectCounter]);
+        std::cout << "\r" << std::string(100, ' ') << "\r";
+        std::cout << "\r" << "current file: " << "\\" << operatingFile.substr(operatingFile.find_last_of("\\") + 1) << std::flush;
         input = getch();
         // cases are ascii character codes from the getch
         switch(input) {
@@ -136,6 +140,7 @@ int main() {
                 std::cin >> tempdir;
                  if (std::filesystem::exists(tempdir) && std::filesystem::is_directory(tempdir)) { // not cin >> cd, who would possibly do that
                     cd = tempdir;
+                    root = cd;
                     std::cout << "root change successful\n";
                 } else {
                     std::cout << "\aroot change failed\n";
@@ -162,8 +167,8 @@ int main() {
         }
         // doesn't work with files more than 66 char long, if your file names are that long you should get help
         // using this in my own audio folder gets caught on the file 'lolgam32momentdeeznutshahafunnymusiconthethingwiththesongthathasthefamuilyguypedergriffinghahasofunnyright.mp3'. this is an edge case and I do not care enough to fix it.
-        std::cout << "\r" << std::string(80, ' ') << "\r";
-        std::cout << "\r" << "current file: " << shortdir << "\\" << ((displayWavs) ? wavs[selectCounter] : files[selectCounter]) << std::flush;
+        std::cout << "\r" << std::string(100, ' ') << "\r";
+        std::cout << "\r" << "current file: " << "\\" << operatingFile.substr(operatingFile.find_last_of("\\") + 1) << std::flush;
     }
     return 0;
     // at least it's not java
